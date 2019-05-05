@@ -10,7 +10,6 @@ farctool2 is the sequel to the original farctool, which was written in Game Make
 # Features
  - Supports the loading of the FAR4, FARC, and MAP formats from the LittleBigPlanet games.
  - Supports texture viewing from every LBP game (excluding certain SDF types) except LBP Vita. 
-   (Planned - For now use this: http://forum.xentax.com/viewtopic.php?p=139837&sid=f273e4c12cf5ce94f7f147626b117bd3#p139837)
  - Supports extracting textures in 3 different formats: PNG, JPG, and DDS.
  - Supports extraction of any file as-is or decompressed.
  - Features adding files to the FARC.
@@ -20,13 +19,6 @@ farctool2 is the sequel to the original farctool, which was written in Game Make
  - Hex viewer (ft. Sporst)
  - Plaintext viewer for text-based files.
  - Supports dumping dependency list of LBP assets with reverse-lookup on GUIDs to filenames.
-
-# Planned
- - LBP Vita GXT texture viewing. 
- - Level editor.
- - Model viewer and exporter.
- - General Material (GMAT) viewer.
- - Model importer.
  
 # Disclaimer
 I did not create any of the games in question nor am I affiliated with any of the developers of these video games.
