@@ -7,9 +7,9 @@ import java.io.File;
 
 public class FileChooser {
 
-    public JFileChooser fileDialogue;
-    FileFilter filter;
-    Component frame;
+    private JFileChooser fileDialogue;
+    private FileFilter filter;
+    private Component frame;
 
     public FileChooser(Component frame) {
         this.fileDialogue = new JFileChooser();
@@ -36,33 +36,40 @@ public class FileChooser {
     public String openDirectory() {
         if (setupFilter("", "", "", false, true)) {
             if (fileDialogue.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
-                return fileDialogue.getSelectedFile().getAbsolutePath().toString() + "\\";
+                return fileDialogue.getSelectedFile().getAbsolutePath() + "\\";
         }
         return null;
     }
 
-    public boolean setupFilter(String name, String ext, String desc, boolean mult, boolean dirs) {
-        if (dirs) fileDialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        else fileDialogue.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    private boolean setupFilter(String name, String ext, String desc, boolean mult, boolean dirs) {
+        if (dirs) {
+            fileDialogue.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        } else {
+            fileDialogue.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        }
         fileDialogue.setMultiSelectionEnabled(mult);
         fileDialogue.removeChoosableFileFilter(filter);
-        if (name != "") fileDialogue.setSelectedFile(new java.io.File(name));
-        if (ext != "" && desc != "") {
-            filter = new FileFilter() {
-                @Override
-                public boolean accept(File f) {
-                    if (f.isDirectory()) return true;
-                    else if (f.getName().toLowerCase().endsWith(ext.toLowerCase())) return true;
-                    else return false;
-                }
-
-                @Override
-                public String getDescription() {
-                    return desc;
-                }
-            };
-            fileDialogue.setFileFilter(filter);
+        if (!name.equals("")) {
+            fileDialogue.setSelectedFile(new File(name));
         }
+        if (ext.equals("") || desc.equals("")) {
+            return true;
+        }
+        filter = new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                }
+                return f.getName().toLowerCase().endsWith(ext.toLowerCase());
+            }
+
+            @Override
+            public String getDescription() {
+                return desc;
+            }
+        };
+        fileDialogue.setFileFilter(filter);
         return true;
     }
 

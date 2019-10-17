@@ -5,7 +5,6 @@
  */
 package com.philosophofee.farctool2.utilities;
 
-import com.philosophofee.farctool2.algorithms.KMPMatch;
 import com.philosophofee.farctool2.windows.MainWindow;
 import net.npe.dds.DDSReader;
 
@@ -310,11 +309,10 @@ public class MiscUtils {
             myMap.seek(myMap.length() - 4);
             int GUIDQuestion = myMap.readInt();
             myMap.close();
-            if (MiscUtils.leftPad(Integer.toHexString(GUIDQuestion), 8).equals(GUID))
-                return (long) (map.length() - 4);
-            KMPMatch matcher = new KMPMatch();
-            long offset = matcher.indexOf(Files.readAllBytes(map.toPath()), MiscUtils.hexStringToByteArray(MiscUtils.leftPad(GUID + "00", 10)));
-            return offset;
+            if (MiscUtils.leftPad(Integer.toHexString(GUIDQuestion), 8).equals(GUID)) {
+                return map.length() - 4;
+            }
+            return KMPMatchUtilities.indexOf(Files.readAllBytes(map.toPath()), MiscUtils.hexStringToByteArray(MiscUtils.leftPad(GUID + "00", 10)));
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }

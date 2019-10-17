@@ -2,7 +2,6 @@ package com.philosophofee.farctool2.windows;
 
 //import com.bulenkov.darcula.DarculaLaf;
 
-import com.philosophofee.farctool2.algorithms.KMPMatch;
 import com.philosophofee.farctool2.streams.CustomPrintStream;
 import com.philosophofee.farctool2.streams.TextAreaOutputStream;
 import com.philosophofee.farctool2.utilities.*;
@@ -10,8 +9,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-import tv.porst.jhexview.*;
 import tv.porst.jhexview.JHexView.DefinitionStatus;
+import tv.porst.jhexview.SimpleDataProvider;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -63,8 +62,8 @@ public class MainWindow extends javax.swing.JFrame {
         PreviewLabel.setVisible(false);
         TextPrevScroll.setVisible(false);
         TextPreview.setVisible(false);
-        setIconImage(new ImageIcon(getClass().getResource("resources/farctool2_icon.png")).getImage());
-        aboutWindow.setIconImage(new ImageIcon(getClass().getResource("resources/farctool2_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/farctool2_icon.png")).getImage());
+        aboutWindow.setIconImage(new ImageIcon(getClass().getResource("/farctool2_icon.png")).getImage());
 
         mapTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         mapTree.addTreeSelectionListener((TreeSelectionEvent e) -> {
@@ -107,11 +106,10 @@ public class MainWindow extends javax.swing.JFrame {
                 if (finalString.contains(".") && FAR4 == null) {
                     currFileName[currentTreeNode] = finalString;
                     EditorPanel.setValueAt(finalString, 0, 1);
-                    KMPMatch matcher = new KMPMatch();
 
                     try {
                         long offset = 0;
-                        offset = matcher.indexOf(Files.readAllBytes(MAP.toPath()), finalString.getBytes());
+                        offset = KMPMatchUtilities.indexOf(Files.readAllBytes(MAP.toPath()), finalString.getBytes());
                         try (RandomAccessFile mapAccess = new RandomAccessFile(MAP, "rw")) {
                             mapAccess.seek(0);
                             boolean lbp3map = MapUtils.isLBP3Map(mapAccess.readInt(), false);
@@ -195,9 +193,9 @@ public class MainWindow extends javax.swing.JFrame {
                     TextPreview.setVisible(false);
                     byte[] workWithData = null;
                     if (FAR4 != null)
-                        workWithData = FarUtils.pullFromFAR4(currFileName[currFileName.length - 1].split("[.]")[0], currSize[currFileName.length - 1], FAR4);
+                        workWithData = FARCUtilities.pullFromFAR4(currFileName[currFileName.length - 1].split("[.]")[0], currSize[currFileName.length - 1], FAR4);
                     else
-                        workWithData = FarUtils.pullFromFarc(currSHA1[currFileName.length - 1], FARC, true);
+                        workWithData = FARCUtilities.pullFromFARC(currSHA1[currFileName.length - 1], FARC, true);
                     if (workWithData == null) {
                         System.out.println("As a result, I wasn't able to preview anything...");
                         hexViewer.setData(null);
@@ -375,7 +373,7 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Courier New", 0, 18)); // NOI18N
         jLabel1.setText("farctool2!");
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/philosophofee/farctool2/windows/resources/1002.gif"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/1002.gif"))); // NOI18N
 
         jLabel3.setFont(new java.awt.Font("Courier New", 0, 11)); // NOI18N
         jLabel3.setText("written by Philosophofee");
@@ -877,7 +875,7 @@ public class MainWindow extends javax.swing.JFrame {
         try {
             for (int pathCount = 0; pathCount < currSHA1.length; pathCount++) {
                 if (currFileName[pathCount] == null) continue;
-                byte[] bytesToRead = FarUtils.pullFromFarc(currSHA1[pathCount], FARC, false);
+                byte[] bytesToRead = FARCUtilities.pullFromFARC(currSHA1[pathCount], FARC, false);
                 ByteArrayInputStream fileAccess = new ByteArrayInputStream(bytesToRead);
                 fileAccess.skip(8);
                 //Get dependencies offset
@@ -967,9 +965,9 @@ public class MainWindow extends javax.swing.JFrame {
 
             try {
                 byte[] bytesToSave;
-                if (FAR4 == null) bytesToSave = FarUtils.pullFromFarc(currSHA1[pathCount], FARC, false);
+                if (FAR4 == null) bytesToSave = FARCUtilities.pullFromFARC(currSHA1[pathCount], FARC, false);
                 else
-                    bytesToSave = FarUtils.pullFromFAR4(currFileName[pathCount].split("[.]")[0], currSize[pathCount], FAR4);
+                    bytesToSave = FARCUtilities.pullFromFAR4(currFileName[pathCount].split("[.]")[0], currSize[pathCount], FAR4);
                 if (currSHA1.length != 1) {
                     outputFileName = selectedDirectory;
                     outputFileName = outputFileName + "\\" + currFileName[pathCount].substring(currFileName[pathCount].lastIndexOf("/") + 1);
@@ -1066,11 +1064,10 @@ public class MainWindow extends javax.swing.JFrame {
         }
         for (int pathCount = 0; pathCount < currFileName.length; pathCount++) {
             if (currFileName[pathCount] == null) continue;
-            KMPMatch matcher = new KMPMatch();
             long offset = 0;
             boolean lbp3map = false;
             try {
-                offset = matcher.indexOf(Files.readAllBytes(MAP.toPath()), currFileName[pathCount].getBytes());
+                offset = KMPMatchUtilities.indexOf(Files.readAllBytes(MAP.toPath()), currFileName[pathCount].getBytes());
             } catch (IOException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1105,11 +1102,10 @@ public class MainWindow extends javax.swing.JFrame {
                 System.out.println("You can't delete a folder that has contents in it!");
                 return;
             }
-            KMPMatch matcher = new KMPMatch();
             long offset = 0;
             boolean lbp3map = false;
             try {
-                offset = matcher.indexOf(Files.readAllBytes(MAP.toPath()), currFileName[pathCount].getBytes());
+                offset = KMPMatchUtilities.indexOf(Files.readAllBytes(MAP.toPath()), currFileName[pathCount].getBytes());
             } catch (IOException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1212,13 +1208,13 @@ public class MainWindow extends javax.swing.JFrame {
             try {
                 if (FAR4 == null) {
                     if (decompress)
-                        bytesToSave = ZlibUtils.decompressThis(FarUtils.pullFromFarc(currSHA1[pathCount], FARC, false), false);
-                    else bytesToSave = FarUtils.pullFromFarc(currSHA1[pathCount], FARC, false);
+                        bytesToSave = ZlibUtils.decompressThis(FARCUtilities.pullFromFARC(currSHA1[pathCount], FARC, false), false);
+                    else bytesToSave = FARCUtilities.pullFromFARC(currSHA1[pathCount], FARC, false);
                 } else {
                     if (decompress)
-                        bytesToSave = ZlibUtils.decompressThis(FarUtils.pullFromFAR4(currFileName[pathCount].split("[.]")[0], currSize[pathCount], FAR4), false);
+                        bytesToSave = ZlibUtils.decompressThis(FARCUtilities.pullFromFAR4(currFileName[pathCount].split("[.]")[0], currSize[pathCount], FAR4), false);
                     else
-                        bytesToSave = FarUtils.pullFromFAR4(currFileName[pathCount].split("[.]")[0], currSize[pathCount], FAR4);
+                        bytesToSave = FARCUtilities.pullFromFAR4(currFileName[pathCount].split("[.]")[0], currSize[pathCount], FAR4);
                 }
             } catch (DataFormatException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -1267,7 +1263,7 @@ public class MainWindow extends javax.swing.JFrame {
                     System.out.println("File access cancelled by user.");
                     return;
                 }
-                FarUtils.addFile(file, selectedFARCs);
+                FARCUtilities.addFile(file, selectedFARCs);
                 byte[] SHA1 = MiscUtils.getSHA1(file);
                 String fileName = "";
                 for (int pathCount = 0; pathCount < currSHA1.length; pathCount++) {
@@ -1288,7 +1284,7 @@ public class MainWindow extends javax.swing.JFrame {
             } else {
                 byte[] data = Files.readAllBytes(file.toPath());
                 for (int pathCount = 0; pathCount < currSHA1.length; pathCount++)
-                    FarUtils.rebuildFAR4(this, currSHA1[pathCount], data);
+                    FARCUtilities.rebuildFAR4(this, currSHA1[pathCount], data);
             }
         } catch (Exception ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -1296,7 +1292,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (FAR4 == null) {
             ((DefaultTreeModel) mapTree.getModel()).reload((DefaultMutableTreeNode) mapTree.getModel().getRoot());
             mapTree.updateUI();
-        } else FarUtils.openFAR4(this);
+        } else FARCUtilities.openFAR4(this);
         System.out.println("Files have succesfully been replaced.");
     }//GEN-LAST:event_replaceRawActionPerformed
 
@@ -1316,7 +1312,7 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         try {
-            for (int i = 0; i < files.length; i++) FarUtils.addFile(files[i], SelectedFARCs);
+            for (int i = 0; i < files.length; i++) FARCUtilities.addFile(files[i], SelectedFARCs);
         } catch (Exception ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1397,7 +1393,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         if (!currFileName[0].contains(".plan")) return;
         try {
-            byte[] bytesToRead = FarUtils.pullFromFarc(currSHA1[0], FARC, false);
+            byte[] bytesToRead = FARCUtilities.pullFromFARC(currSHA1[0], FARC, false);
             ByteArrayInputStream fileAccess = new ByteArrayInputStream(bytesToRead);
             fileAccess.skip(8);
 
@@ -1446,7 +1442,7 @@ public class MainWindow extends javax.swing.JFrame {
             rootElement.setAttributeNode(icon);
             rootElement.setAttributeNode(game);
 
-            byte[] buffer = FarUtils.pullFromFarc(currSHA1[0], FARC, false);
+            byte[] buffer = FARCUtilities.pullFromFARC(currSHA1[0], FARC, false);
             File fileToPack = new File(selectedDirectory + nameOfNode.substring(0, nameOfNode.length() - 5) + "/files/" + nameOfNode);
             fileToPack.getParentFile().mkdirs();
             fileToPack.createNewFile();
@@ -1487,11 +1483,11 @@ public class MainWindow extends javax.swing.JFrame {
                     String Hash = MiscUtils.getHashFromGUID(MiscUtils.byteArrayToHexString(dependencyGUIDByte), MAP);
                     if ("NULL".equals(Hash))
                         continue;
-                    byte[] file = FarUtils.pullFromFarc(Hash, FARC, false);
+                    byte[] file = FARCUtilities.pullFromFARC(Hash, FARC, false);
                     if (file == null)
                         continue;
                     if (fileNameNew.contains(".gmat") || fileNameNew.contains(".mol")) {
-                        byte[] innerBytesToRead = FarUtils.pullFromFarc(Hash, FARC, false);
+                        byte[] innerBytesToRead = FARCUtilities.pullFromFARC(Hash, FARC, false);
                         ByteArrayInputStream innerFileAccess = new ByteArrayInputStream(innerBytesToRead);
                         innerFileAccess.skip(8);
 
@@ -1525,7 +1521,7 @@ public class MainWindow extends javax.swing.JFrame {
                                 String innerHash = MiscUtils.getHashFromGUID(MiscUtils.byteArrayToHexString(innerDependencyGUIDByte), MAP);
                                 if ("NULL".equals(innerHash))
                                     continue;
-                                byte[] innerFile = FarUtils.pullFromFarc(innerHash, FARC, false);
+                                byte[] innerFile = FARCUtilities.pullFromFARC(innerHash, FARC, false);
                                 if (innerFile == null)
                                     continue;
                                 String innerOutputFileName = selectedDirectory + currFileName[0].substring(currFileName[0].lastIndexOf("/") + 1);
@@ -1687,7 +1683,7 @@ public class MainWindow extends javax.swing.JFrame {
             System.out.println("File access cancelled by user.");
             return;
         } else FAR4 = newFAR4;
-        FarUtils.openFAR4(this);
+        FARCUtilities.openFAR4(this);
     }//GEN-LAST:event_openFAR4ActionPerformed
 
     private void replaceDecompressedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceDecompressedActionPerformed
@@ -1716,10 +1712,10 @@ public class MainWindow extends javax.swing.JFrame {
                     System.out.println("File access cancelled by user.");
                     return;
                 }
-                FarUtils.addFile(data, selectedFARCs);
+                FARCUtilities.addFile(data, selectedFARCs);
                 MiscUtils.replaceEntryByGUID(currGUID[0], currFileName[0], Integer.toHexString((int) data.length), MiscUtils.byteArrayToHexString(MiscUtils.getSHA1(data)), this);
             } else {
-                FarUtils.rebuildFAR4(this, currSHA1[0], data);
+                FARCUtilities.rebuildFAR4(this, currSHA1[0], data);
             }
 
         } catch (Exception ex) {
@@ -1728,7 +1724,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (FAR4 == null) {
             ((DefaultTreeModel) mapTree.getModel()).reload((DefaultMutableTreeNode) mapTree.getModel().getRoot());
             mapTree.updateUI();
-        } else FarUtils.openFAR4(this);
+        } else FARCUtilities.openFAR4(this);
         System.out.println("Files have succesfully been replaced.");
     }//GEN-LAST:event_replaceDecompressedActionPerformed
 
@@ -1824,16 +1820,16 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> {
-   /* TODO: fix
-   BasicLookAndFeel darcula = new DarculaLaf();
-   try {
-    UIManager.setLookAndFeel(darcula);
-   } catch (UnsupportedLookAndFeelException ex) {
-    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-   }
-   */
+           /* TODO: fix
+           BasicLookAndFeel darcula = new DarculaLaf();
+           try {
+            UIManager.setLookAndFeel(darcula);
+           } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+           }
+           */
             MainWindow myWindow = new MainWindow();
             myWindow.setVisible(true);
         });

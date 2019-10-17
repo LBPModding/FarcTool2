@@ -7,82 +7,91 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FarUtils {
+public final class FARCUtilities {
 
-    public static byte[] pullFromFarc(String currSHA1, File[] bigBoyFarc, boolean log) {
-        if (bigBoyFarc == null) return null;
-        if (log) System.out.println("Converting " + currSHA1 + " to byte array...");
+    private FARCUtilities() {
+    }
+
+    public static byte[] pullFromFARC(String currSHA1, File[] bigBoyFARC, boolean log) {
+        if (bigBoyFARC == null) {
+            return null;
+        }
+        if (log) {
+            System.out.println("Converting " + currSHA1 + " to byte array...");
+        }
 
         BigFileSearcher searcher = new BigFileSearcher();
-        int fileCount = 0;
         int selectedFARC = 0;
-        long tableOffset = 0;
         long fileTableOffset = 0;
         RandomAccessFile farcAccess = null;
         try {
-            for (int i = 0; i < bigBoyFarc.length; i++) {
-                farcAccess = new RandomAccessFile(bigBoyFarc[i], "rw");
-                farcAccess.seek(bigBoyFarc[i].length() - 8);
-                fileCount = farcAccess.readInt();
-                tableOffset = (bigBoyFarc[i].length() - 8 - (fileCount * 28));
-                fileTableOffset = searcher.indexOf(bigBoyFarc[i], MiscUtils.hexStringToByteArray(currSHA1), tableOffset);
-                if (fileTableOffset == -1) farcAccess.close();
-                else {
+            for (int i = 0; i < bigBoyFARC.length; i++) {
+                farcAccess = new RandomAccessFile(bigBoyFARC[i], "rw");
+                farcAccess.seek(bigBoyFARC[i].length() - 8);
+                int fileCount = farcAccess.readInt();
+                long tableOffset = (bigBoyFARC[i].length() - 8 - (fileCount * 28));
+                fileTableOffset = searcher.indexOf(bigBoyFARC[i], MiscUtils.hexStringToByteArray(currSHA1), tableOffset);
+                if (fileTableOffset == -1) {
+                    farcAccess.close();
+                } else {
                     selectedFARC = i;
                     break;
                 }
             }
-
-        } catch (IOException ex) {
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         //Let's do some extraction
-        long newFileSize = 0;
-        long newFileOffset = 0;
         byte[] newSHA1 = new byte[20];
         try {
-
             //go to the file table, and grab the hash for verification later
             farcAccess.seek(fileTableOffset);
             farcAccess.readFully(newSHA1);
-            if (log)
-                System.out.println("Entry SHA1 (" + bigBoyFarc[selectedFARC].getName() + "): " + MiscUtils.byteArrayToHexString(newSHA1).toUpperCase());
+            if (log) {
+                System.out.println("Entry SHA1 (" + bigBoyFARC[selectedFARC].getName() + "): " + MiscUtils.byteArrayToHexString(newSHA1).toUpperCase());
+            }
 
             //seek past the sha1 and grab the offset to know where to extract the file
             farcAccess.seek(fileTableOffset + 20);
-            byte bytes[] = new byte[8];
+            byte[] bytes = new byte[8];
             farcAccess.read(bytes, 4, 4);
-            newFileOffset = MiscUtils.getLong(bytes);
-            if (log) System.out.println("Entry offset: " + newFileOffset);
+            long newFileOffset = MiscUtils.getLong(bytes);
+            if (log) {
+                System.out.println("Entry offset: " + newFileOffset);
+            }
 
             //get file size so we can know how much data to pull later
             farcAccess.seek(fileTableOffset + 24);
-            newFileSize = farcAccess.readInt();
-            if (log) System.out.println("Entry size: " + newFileSize);
+            long newFileSize = farcAccess.readInt();
+            if (log) {
+                System.out.println("Entry size: " + newFileSize);
+            }
 
 
-            if (log) System.out.println("Attempting to extract now!");
-            FileInputStream fin = new FileInputStream(bigBoyFarc[selectedFARC]);
+            if (log) {
+                System.out.println("Attempting to extract now!");
+            }
+            FileInputStream fin = new FileInputStream(bigBoyFARC[selectedFARC]);
             fin.skip(newFileOffset);
-            byte[] outputbytes = new byte[(int) newFileSize];
-            int output = 0;
-            output = fin.read(outputbytes);
+            byte[] outputBytes = new byte[(int) newFileSize];
+            fin.read(outputBytes);
 
             fin.close();
 
             farcAccess.close();
 
             //finally, return our bytes!
-            return outputbytes;
-
-        } catch (IOException ex) {
+            return outputBytes;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return null; //something messed up
     }
 
     public static void addFile(File newFile, File[] bigBoyFarc) {
@@ -90,8 +99,8 @@ public class FarUtils {
             byte[] SHA1 = MiscUtils.getSHA1(newFile);
             byte[] file = Files.readAllBytes(newFile.toPath());
 
-            for (int i = 0; i < bigBoyFarc.length; i++) {
-                RandomAccessFile farc = new RandomAccessFile(bigBoyFarc[i], "rw");
+            for (File value : bigBoyFarc) {
+                RandomAccessFile farc = new RandomAccessFile(value, "rw");
 
                 farc.seek(farc.length() - 8);
                 long fileCount = farc.readInt();
@@ -115,11 +124,6 @@ public class FarUtils {
 
                 farc.close();
             }
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -130,8 +134,8 @@ public class FarUtils {
         try {
             byte[] SHA1 = MiscUtils.getSHA1(newFile);
 
-            for (int i = 0; i < bigBoyFarc.length; i++) {
-                RandomAccessFile farc = new RandomAccessFile(bigBoyFarc[i], "rw");
+            for (File file : bigBoyFarc) {
+                RandomAccessFile farc = new RandomAccessFile(file, "rw");
 
                 farc.seek(farc.length() - 8);
                 long fileCount = farc.readInt();
@@ -156,10 +160,6 @@ public class FarUtils {
                 farc.close();
             }
 
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -175,10 +175,8 @@ public class FarUtils {
                 FAR4Access.read(file);
             }
             return file;
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(FarUtils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(FarUtils.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FARCUtilities.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -215,9 +213,9 @@ public class FarUtils {
                     int tableFileOffset = FAR4Access.readInt();
                     Offset -= 20;
                     FAR4Access.seek(Offset);
-                    String tableFileHash = "";
+                    StringBuilder tableFileHash = new StringBuilder();
                     for (int j = 0; j < 20; j++) {
-                        tableFileHash += String.format("%02X", FAR4Access.readByte());
+                        tableFileHash.append(String.format("%02X", FAR4Access.readByte()));
                         Offset += 1;
                         FAR4Access.seek(Offset);
                     }
@@ -233,7 +231,7 @@ public class FarUtils {
                     FAR4Access.seek(tableFileOffset);
                     FAR4Access.read(tableFile);
                     FAR4Access.seek(Offset);
-                    if ((tableFileHash.equals(window.BPRbSHA1) && (!oHash.equals(window.BPRbSHA1))) || tableFileHash.equals(window.IPReSHA1)) {
+                    if ((tableFileHash.toString().equals(window.BPRbSHA1) && (!oHash.equals(window.BPRbSHA1))) || tableFileHash.toString().equals(window.IPReSHA1)) {
                         try (FileOutputStream tempBPRbOutput = new FileOutputStream(tempBPRb)) {
                             tempBPRbOutput.write(tableFile);
                             tempBPRbOutput.close();
@@ -245,7 +243,7 @@ public class FarUtils {
                                 fos.close();
                             }
                             try (RandomAccessFile BPRbAccess = new RandomAccessFile(decompressedBPRb, "rw")) {
-                                Boolean lastEntry = false;
+                                boolean lastEntry = false;
                                 while (!lastEntry) {
                                     long DecOffset = searcher.indexOf(decompressedBPRb, MiscUtils.hexStringToByteArray(oHash));
                                     if (DecOffset == -1) lastEntry = true;
@@ -282,7 +280,7 @@ public class FarUtils {
                         tempTable.write(newBPRbHash);
                         tempTable.writeInt((int) newOffset);
                         tempTable.writeInt((int) BPRbCompressed.length());
-                    } else if (tableFileHash.equals(oHash)) {
+                    } else if (tableFileHash.toString().equals(oHash)) {
                         long newOffset = RebuiltFAR4.getFilePointer();
                         RebuiltFAR4.write(nFile);
                         tempTable.write(nFileHash);
@@ -309,10 +307,8 @@ public class FarUtils {
 
             FAR4Access.setLength(0);
             FAR4Access.write(Files.readAllBytes(Paths.get("temp_FAR4")));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(FarUtils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(FarUtils.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FARCUtilities.class.getName()).log(Level.SEVERE, null, ex);
         }
         new File("temp_FAR4").delete();
         tempBPRb.delete();
@@ -334,18 +330,18 @@ public class FarUtils {
             DefaultMutableTreeNode root = new DefaultMutableTreeNode(window.FAR4.getName());
             DefaultTreeModel model = new DefaultTreeModel((DefaultMutableTreeNode) root);
 
-            window.FAR4Size = new String[Entries];
-            window.FAR4SHA1 = new String[Entries];
+            MainWindow.FAR4Size = new String[Entries];
+            MainWindow.FAR4SHA1 = new String[Entries];
 
             for (int i = 0; i < Entries; i++) {
-                String fileHash = "";
+                StringBuilder fileHash = new StringBuilder();
                 for (int j = 0; j < 20; j++) {
-                    fileHash += String.format("%02X", FAR4Access.readByte());
+                    fileHash.append(String.format("%02X", FAR4Access.readByte()));
                     PreviousOffset += 1;
                     FAR4Access.seek(PreviousOffset);
                 }
 
-                window.FAR4SHA1[i] = fileHash;
+                MainWindow.FAR4SHA1[i] = fileHash.toString();
 
 
                 int Offset;
@@ -356,7 +352,7 @@ public class FarUtils {
 
                 byte[] Magic = new byte[3];
                 FAR4Access.read(Magic);
-                String Extension = new String(Magic, "UTF-8").toLowerCase();
+                String Extension = new String(Magic, StandardCharsets.UTF_8).toLowerCase();
                 if (Extension.contains("pln")) Extension = "plan";
                 else if (MiscUtils.byteArrayToHexString(Magic).toLowerCase().startsWith("ffd8"))
                     Extension = "jpg";
@@ -365,18 +361,18 @@ public class FarUtils {
 
                 FAR4Access.seek(PreviousOffset);
 
-                String fileSize = "";
+                StringBuilder fileSize = new StringBuilder();
                 for (int j = 0; j < 4; j++) {
-                    fileSize += String.format("%02X", FAR4Access.readByte());
+                    fileSize.append(String.format("%02X", FAR4Access.readByte()));
                     PreviousOffset += 1;
                     FAR4Access.seek(PreviousOffset);
                 }
 
-                if (Extension.contains("bpr")) window.BPRbSHA1 = fileHash;
-                if (Extension.contains("prf")) window.PRFbSHA1 = fileHash;
-                if (Extension.contains("ipr")) window.IPReSHA1 = fileHash;
+                if (Extension.contains("bpr")) window.BPRbSHA1 = fileHash.toString();
+                if (Extension.contains("prf")) window.PRFbSHA1 = fileHash.toString();
+                if (Extension.contains("ipr")) window.IPReSHA1 = fileHash.toString();
 
-                window.FAR4Size[i] = fileSize;
+                MainWindow.FAR4Size[i] = fileSize.toString();
 
                 MiscUtils.buildTreeFromString(model, Integer.toHexString(Offset) + "." + Extension);
             }
@@ -387,8 +383,6 @@ public class FarUtils {
             window.MAP = null;
             window.FARC = null;
             window.disableFARCMenus();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }

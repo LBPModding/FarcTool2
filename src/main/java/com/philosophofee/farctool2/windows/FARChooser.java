@@ -20,7 +20,7 @@ public class FARChooser extends javax.swing.JDialog {
         super(parent, modal);
         this.Window = parent;
         this.setTitle("FARC Chooser");
-        this.setIconImage(new ImageIcon(getClass().getResource("resources/farctool2_icon.png")).getImage());
+        this.setIconImage(new ImageIcon(getClass().getResource("/farctool2_icon.png")).getImage());
         for (int i = 0; i < Window.FARC.length; i++) this.TableEntries.addElement(Window.FARC[i].getName());
         initComponents();
         this.setVisible(true);

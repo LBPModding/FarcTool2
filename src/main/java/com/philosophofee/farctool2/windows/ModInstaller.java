@@ -5,7 +5,7 @@
  */
 package com.philosophofee.farctool2.windows;
 
-import com.philosophofee.farctool2.utilities.FarUtils;
+import com.philosophofee.farctool2.utilities.FARCUtilities;
 import com.philosophofee.farctool2.utilities.MiscUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,7 +45,7 @@ public class ModInstaller extends javax.swing.JFrame {
         this.directory = directory;
         this.mod = mod;
         this.window = window;
-        setIconImage(new ImageIcon(getClass().getResource("resources/farctool2_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/farctool2_icon.png")).getImage());
 
         try {
             BufferedImage image = ImageIO.read(new File(directory + "/" + mod.getDocumentElement().getAttribute("icon")));
@@ -101,7 +101,7 @@ public class ModInstaller extends javax.swing.JFrame {
 
         jLayeredPane1.add(jLayeredPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(482, 84, -1, -1));
 
-        Background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/philosophofee/farctool2/windows/resources/news_fill.tex.png"))); // NOI18N
+        Background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/news_fill.tex.png"))); // NOI18N
         jLayeredPane1.add(Background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 640, 330));
         jLayeredPane1.setLayer(Icon, 2);
         jLayeredPane1.add(Icon, new org.netbeans.lib.awtextra.AbsoluteConstraints(105, 96, 116, 116));
@@ -166,7 +166,7 @@ public class ModInstaller extends javax.swing.JFrame {
                     else
                         MiscUtils.addEntry(Path, MiscUtils.byteArrayToHexString(SHA1), Integer.toString((int) Size), GUID, window);
 
-                    FarUtils.addFile(newFile, selectedFARCs);
+                    FARCUtilities.addFile(newFile, selectedFARCs);
 
                     ((DefaultTreeModel) window.mapTree.getModel()).reload((DefaultMutableTreeNode) window.mapTree.getModel().getRoot());
                     window.mapTree.updateUI();

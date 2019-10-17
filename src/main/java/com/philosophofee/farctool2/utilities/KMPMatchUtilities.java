@@ -1,13 +1,17 @@
-package com.philosophofee.farctool2.algorithms;
+package com.philosophofee.farctool2.utilities;
 
 /**
  * Knuth-Morris-Pratt Algorithm for Pattern Matching
  */
-public class KMPMatch {
+public final class KMPMatchUtilities {
+
+    private KMPMatchUtilities() {
+    }
+
     /**
      * Finds the first occurrence of the pattern in the text.
      */
-    public int indexOf(byte[] data, byte[] pattern) {
+    public static int indexOf(byte[] data, byte[] pattern) {
         int[] failure = computeFailure(pattern);
 
         int j = 0;
@@ -31,7 +35,7 @@ public class KMPMatch {
      * Computes the failure function using a boot-strapping process,
      * where the pattern is matched against itself.
      */
-    private int[] computeFailure(byte[] pattern) {
+    private static int[] computeFailure(byte[] pattern) {
         int[] failure = new int[pattern.length];
 
         int j = 0;

@@ -5,8 +5,8 @@
  */
 package com.philosophofee.farctool2.windows;
 
-import com.philosophofee.farctool2.utilities.Entry;
-import com.philosophofee.farctool2.utilities.FarUtils;
+import com.philosophofee.farctool2.data.Entry;
+import com.philosophofee.farctool2.utilities.FARCUtilities;
 import com.philosophofee.farctool2.utilities.MiscUtils;
 
 import javax.swing.*;
@@ -32,7 +32,7 @@ public class EntryAdditionWindow extends javax.swing.JFrame {
         if (Window.FARC == null) this.FFFARC.setEnabled(false);
         setTitle("Entry Adder");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setIconImage(new ImageIcon(getClass().getResource("resources/farctool2_icon.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/farctool2_icon.png")).getImage());
         this.Window = Window;
 
     }
@@ -277,7 +277,7 @@ public class EntryAdditionWindow extends javax.swing.JFrame {
     private void FFAddEntryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FFAddEntryActionPerformed
         Entry newEntry = new Entry(FFFilePath.getText(), FFGUID.getText(), SelectedFile, FFFARC.isSelected());
         Entries.add(newEntry);
-        TableEntries.addElement(newEntry.Path);
+        TableEntries.addElement(newEntry.path);
 
     }//GEN-LAST:event_FFAddEntryActionPerformed
 
@@ -290,16 +290,16 @@ public class EntryAdditionWindow extends javax.swing.JFrame {
     private void AddEntriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddEntriesActionPerformed
         for (int i = 0; i < Entries.size(); i++) {
             Entry entry = (Entry) Entries.get(i);
-            if (entry.AddToFARC) {
+            if (entry.addToFARC) {
                 File[] selectedFARCs = Window.getSelectedFARCs();
                 if (selectedFARCs == null) {
                     System.out.println("File access cancelled by user.");
                     return;
                 }
-                FarUtils.addFile(entry.FileToAdd, selectedFARCs);
+                FARCUtilities.addFile(entry.fileToAdd, selectedFARCs);
 
             }
-            MiscUtils.addEntry(entry.Path, entry.SHA1, entry.Size, entry.GUID, Window);
+            MiscUtils.addEntry(entry.path, entry.sha1, entry.size, entry.guid, Window);
         }
         Window.showUserDialog("Success!", "Entries successfully added!");
         Entries.clear();
@@ -309,7 +309,7 @@ public class EntryAdditionWindow extends javax.swing.JFrame {
     private void ManualAddEntryToTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ManualAddEntryToTableActionPerformed
         Entry newEntry = new Entry(ManualFilePath.getText(), ManualSHA1.getText(), ManualSize.getText(), ManualGUID.getText());
         Entries.add(newEntry);
-        TableEntries.addElement(newEntry.Path);
+        TableEntries.addElement(newEntry.path);
     }//GEN-LAST:event_ManualAddEntryToTableActionPerformed
 
     /**
