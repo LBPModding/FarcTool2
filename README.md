@@ -26,7 +26,7 @@ All researched data was acquired via means of downloading game package files thr
 Nothing malicious is intended. This program was written as a labor of love for the franchise and as a budding programmer's first major project. 
 
 # Credits
-The program was written by myself, with help from the following:
+The program was written by Ben "philosophofee" (https://github.com/philosophofee), with help from the following:
  - "The man in the shadows"
  - Aluigi (http://zenhax.com)
  - http://xentax.com
