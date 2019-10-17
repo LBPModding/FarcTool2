@@ -7,6 +7,15 @@ package com.philosophofee.farctool2.windows;
 
 import com.philosophofee.farctool2.utilities.FarUtils;
 import com.philosophofee.farctool2.utilities.MiscUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,18 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 /**
- *
  * @author Aidan
  */
 public class ModInstaller extends javax.swing.JFrame {
@@ -37,7 +36,7 @@ public class ModInstaller extends javax.swing.JFrame {
     public Document mod;
     public MainWindow window;
     public File[] selectedFARCs;
-    
+
     public ModInstaller(Document mod, String directory, File[] selectedFARCs, MainWindow window) throws IOException {
         initComponents();
         Title.setText(mod.getDocumentElement().getAttribute("name"));
@@ -47,19 +46,19 @@ public class ModInstaller extends javax.swing.JFrame {
         this.mod = mod;
         this.window = window;
         setIconImage(new ImageIcon(getClass().getResource("resources/farctool2_icon.png")).getImage());
-        
+
         try {
             BufferedImage image = ImageIO.read(new File(directory + "/" + mod.getDocumentElement().getAttribute("icon")));
             Icon.setIcon(MiscUtils.getScaledIcon(image));
         } catch (IOException ex) {
             Logger.getLogger(ModInstaller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         setVisible(true);
         setTitle("Mod Installer");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
-        
+
+
     }
 
     private ModInstaller() {
@@ -92,12 +91,12 @@ public class ModInstaller extends javax.swing.JFrame {
         javax.swing.GroupLayout jLayeredPane2Layout = new javax.swing.GroupLayout(jLayeredPane2);
         jLayeredPane2.setLayout(jLayeredPane2Layout);
         jLayeredPane2Layout.setHorizontalGroup(
-            jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 95, Short.MAX_VALUE)
+                jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 95, Short.MAX_VALUE)
         );
         jLayeredPane2Layout.setVerticalGroup(
-            jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 147, Short.MAX_VALUE)
+                jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 147, Short.MAX_VALUE)
         );
 
         jLayeredPane1.add(jLayeredPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(482, 84, -1, -1));
@@ -140,19 +139,16 @@ public class ModInstaller extends javax.swing.JFrame {
 
     private void InstallActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InstallActionPerformed
         Install.setEnabled(false);
-        try
-        {
-            System.out.println("Installing Mod \"" +  mod.getDocumentElement().getAttribute("name") + "\"...");
+        try {
+            System.out.println("Installing Mod \"" + mod.getDocumentElement().getAttribute("name") + "\"...");
 
             NodeList fileList = mod.getElementsByTagName("file");
 
-            for (int i = 0; i < fileList.getLength(); i++)
-            {
+            for (int i = 0; i < fileList.getLength(); i++) {
 
                 Node file = fileList.item(i);
 
-                if (file.getNodeType() == Node.ELEMENT_NODE)
-                {
+                if (file.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) file;
 
                     File newFile = new File(directory + element.getElementsByTagName("path").item(0).getTextContent());
@@ -165,12 +161,14 @@ public class ModInstaller extends javax.swing.JFrame {
                     String GUID = element.getAttribute("guid");
                     String Path = element.getElementsByTagName("map").item(0).getTextContent();
 
-                    if (MiscUtils.findGUIDOffset(GUID, window.MAP) != -1) MiscUtils.replaceEntryByGUID(GUID, Path, Integer.toString((int)Size), MiscUtils.byteArrayToHexString(SHA1), window);
-                    else MiscUtils.addEntry(Path, MiscUtils.byteArrayToHexString(SHA1), Integer.toString((int) Size), GUID, window);
+                    if (MiscUtils.findGUIDOffset(GUID, window.MAP) != -1)
+                        MiscUtils.replaceEntryByGUID(GUID, Path, Integer.toString((int) Size), MiscUtils.byteArrayToHexString(SHA1), window);
+                    else
+                        MiscUtils.addEntry(Path, MiscUtils.byteArrayToHexString(SHA1), Integer.toString((int) Size), GUID, window);
 
                     FarUtils.addFile(newFile, selectedFARCs);
-                    
-                    ((DefaultTreeModel) window.mapTree.getModel()).reload((DefaultMutableTreeNode)window.mapTree.getModel().getRoot());
+
+                    ((DefaultTreeModel) window.mapTree.getModel()).reload((DefaultMutableTreeNode) window.mapTree.getModel().getRoot());
                     window.mapTree.updateUI();
 
                 }
@@ -192,9 +190,9 @@ public class ModInstaller extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
-    
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -212,8 +210,8 @@ public class ModInstaller extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ModInstaller.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
-        
+
+
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

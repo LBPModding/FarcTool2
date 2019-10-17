@@ -5,10 +5,9 @@
  */
 package com.philosophofee.farctool2.windows;
 
+import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 
 public class FARChooser extends javax.swing.JDialog {
 
@@ -16,6 +15,7 @@ public class FARChooser extends javax.swing.JDialog {
     public DefaultListModel TableEntries = new DefaultListModel<String>();
     public boolean isSelected = false;
     public File[] selectedFARCs;
+
     public FARChooser(MainWindow parent, boolean modal) {
         super(parent, modal);
         this.Window = parent;
@@ -25,7 +25,7 @@ public class FARChooser extends javax.swing.JDialog {
         initComponents();
         this.setVisible(true);
     }
-    
+
     public File[] getSelected() {
         return this.selectedFARCs;
     }
@@ -59,33 +59,33 @@ public class FARChooser extends javax.swing.JDialog {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                    .addComponent(SelectFARCs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                                        .addComponent(SelectFARCs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(SelectFARCs)
-                .addContainerGap(12, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(SelectFARCs)
+                                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void SelectFARCsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectFARCsActionPerformed
-       int[] selected = FARCList.getSelectedIndices();
-       this.selectedFARCs = new File[selected.length];
-       for (int i = 0; i < selected.length; i++) this.selectedFARCs[i] = Window.FARC[selected[i]];
-       this.isSelected = true;
-       this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        int[] selected = FARCList.getSelectedIndices();
+        this.selectedFARCs = new File[selected.length];
+        for (int i = 0; i < selected.length; i++) this.selectedFARCs[i] = Window.FARC[selected[i]];
+        this.isSelected = true;
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_SelectFARCsActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
