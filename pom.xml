@@ -50,7 +50,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <java.release>11</java.release>
     </properties>
 
     <build>
@@ -115,7 +114,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <source>${java.release}</source>
+                    <source>${java.version}</source>
                 </configuration>
                 <executions>
                     <execution>
@@ -202,6 +201,16 @@
             <groupId>org.netbeans.external</groupId>
             <artifactId>AbsoluteLayout</artifactId>
             <version>RELEASE111</version>
+        </dependency>
+        <dependency>
+            <groupId>org.riversun</groupId>
+            <artifactId>bigdoc</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.arcnor</groupId>
+            <artifactId>jhexview</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
