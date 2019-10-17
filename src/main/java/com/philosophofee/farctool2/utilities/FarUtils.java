@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -89,9 +92,7 @@ public class FarUtils {
   public static void addFile(File newFile, File[] bigBoyFarc) {
   try {
    byte[] SHA1 = MiscUtils.getSHA1(newFile);
-   FileInputStream fis = new FileInputStream(newFile);
-   byte[] file = fis.readAllBytes();
-   fis.close();
+   byte[] file = Files.readAllBytes(newFile.toPath());
 
    for (int i = 0; i < bigBoyFarc.length; i++)
    {
@@ -276,8 +277,8 @@ public static void addFile(byte[] newFile, File[] bigBoyFarc) {
                            BPRbCompAccess.close();   
                         }
                     }
-                     
-                     try (FileInputStream fis = new FileInputStream(BPRbCompressed)) { RebuiltFAR4.write(fis.readAllBytes()); fis.close(); }
+
+                     RebuiltFAR4.write(Files.readAllBytes(BPRbCompressed.toPath()));
                      
                      newBPRbHash = MiscUtils.getSHA1(BPRbCompressed);
                      tempTable.write(newBPRbHash);
@@ -301,22 +302,19 @@ public static void addFile(byte[] newFile, File[] bigBoyFarc) {
                      tempTable.writeInt((int) tableFile.length);
                  }
              }
-             tempTable.write(MiscUtils.hexStringToByteArray("0000000000000000000000000000000000000000")); tempTable.close();
-             FileInputStream finalTable = new FileInputStream(tempTableFile);
-             RebuiltFAR4.write(finalTable.readAllBytes());
+             tempTable.write(MiscUtils.hexStringToByteArray("0000000000000000000000000000000000000000"));
+             tempTable.close();
+             RebuiltFAR4.write(Files.readAllBytes(tempTableFile.toPath()));
              RebuiltFAR4.writeInt(Entries);
              RebuiltFAR4.write(MiscUtils.hexStringToByteArray("46415234"));
              RebuiltFAR4.seek((RebuiltFAR4.length() - 28) - (Entries * 28) - 60);
              if (oHash.equals(window.BPRbSHA1)) RebuiltFAR4.write(nFileHash);
              else if (newBPRbHash != null) RebuiltFAR4.write(newBPRbHash);     
-             finalTable.close(); tempTableFile.delete();
+             tempTableFile.delete();
          }
-         
-         FileInputStream FAR4toCopy = new FileInputStream("temp_FAR4");
+
          FAR4Access.setLength(0);
-         FAR4Access.write(FAR4toCopy.readAllBytes());
-         FAR4toCopy.close();
-         
+         FAR4Access.write(Files.readAllBytes(Paths.get("temp_FAR4")));
      } catch (FileNotFoundException ex) {
          Logger.getLogger(FarUtils.class.getName()).log(Level.SEVERE, null, ex);
      } catch (Exception ex) {

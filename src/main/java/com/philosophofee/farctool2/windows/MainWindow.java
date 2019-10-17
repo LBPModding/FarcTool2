@@ -1,6 +1,6 @@
 package com.philosophofee.farctool2.windows;
 
-import com.bulenkov.darcula.DarculaLaf;
+//import com.bulenkov.darcula.DarculaLaf;
 import com.philosophofee.farctool2.streams.CustomPrintStream;
 import com.philosophofee.farctool2.algorithms.KMPMatch;
 import com.philosophofee.farctool2.utilities.MapUtils;
@@ -1249,7 +1249,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
     else
     {
-        FileInputStream fis = new FileInputStream(file); byte[] data = fis.readAllBytes(); fis.close();
+        byte[] data = Files.readAllBytes(file.toPath());
         for (int pathCount = 0; pathCount < currSHA1.length; pathCount++) FarUtils.rebuildFAR4(this, currSHA1[pathCount], data);
     }
    } catch (Exception ex) {
@@ -1641,6 +1641,8 @@ public class MainWindow extends javax.swing.JFrame {
  }//GEN-LAST:event_replaceDecompressedActionPerformed
 
     private void toggleDarculaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleDarculaActionPerformed
+       // TODO: fix
+       /*
        if (toggleDarcula.isSelected()) 
        {
             BasicLookAndFeel darcula = new DarculaLaf();
@@ -1663,6 +1665,7 @@ public class MainWindow extends javax.swing.JFrame {
        }
        SwingUtilities.updateComponentTreeUI(this);
        SwingUtilities.updateComponentTreeUI(fileDialogue.fileDialogue);
+       */
     }//GEN-LAST:event_toggleDarculaActionPerformed
 
  public void disableFARCMenus() {
@@ -1731,12 +1734,14 @@ public class MainWindow extends javax.swing.JFrame {
 
  public static void main(String args[]) {
   java.awt.EventQueue.invokeLater(() -> {
+   /* TODO: fix
    BasicLookAndFeel darcula = new DarculaLaf();
    try {
     UIManager.setLookAndFeel(darcula);
    } catch (UnsupportedLookAndFeelException ex) {
     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
    }
+   */
    MainWindow myWindow = new MainWindow();
    myWindow.setVisible(true);
   });
