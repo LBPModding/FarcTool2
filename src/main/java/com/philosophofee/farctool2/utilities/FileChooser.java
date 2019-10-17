@@ -7,7 +7,7 @@ import java.io.File;
 
 public class FileChooser {
 
-    private JFileChooser fileDialogue;
+    public JFileChooser fileDialogue;
     private FileFilter filter;
     private Component frame;
 

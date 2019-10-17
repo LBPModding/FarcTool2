@@ -2,6 +2,7 @@ package com.philosophofee.farctool2.windows;
 
 //import com.bulenkov.darcula.DarculaLaf;
 
+import com.bulenkov.darcula.DarculaLaf;
 import com.philosophofee.farctool2.streams.CustomPrintStream;
 import com.philosophofee.farctool2.streams.TextAreaOutputStream;
 import com.philosophofee.farctool2.utilities.*;
@@ -15,6 +16,7 @@ import tv.porst.jhexview.SimpleDataProvider;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.plaf.basic.BasicLookAndFeel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -1729,31 +1731,22 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_replaceDecompressedActionPerformed
 
     private void toggleDarculaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleDarculaActionPerformed
-        // TODO: fix
-       /*
-       if (toggleDarcula.isSelected()) 
-       {
+        if (toggleDarcula.isSelected()) {
             BasicLookAndFeel darcula = new DarculaLaf();
-            try { UIManager.setLookAndFeel(darcula); } 
-            catch (UnsupportedLookAndFeelException ex) { Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex); }
-       }
-       else 
-       {
-           try {
-               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-           } catch (ClassNotFoundException ex) {
-               Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-           } catch (InstantiationException ex) {
-               Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-           } catch (IllegalAccessException ex) {
-               Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-           } catch (UnsupportedLookAndFeelException ex) {
-               Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-           }
-       }
-       SwingUtilities.updateComponentTreeUI(this);
-       SwingUtilities.updateComponentTreeUI(fileDialogue.fileDialogue);
-       */
+            try {
+                UIManager.setLookAndFeel(darcula);
+            } catch (UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        SwingUtilities.updateComponentTreeUI(this);
+        SwingUtilities.updateComponentTreeUI(fileDialogue.fileDialogue);
     }//GEN-LAST:event_toggleDarculaActionPerformed
 
     public void disableFARCMenus() {
@@ -1822,14 +1815,12 @@ public class MainWindow extends javax.swing.JFrame {
 
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> {
-           /* TODO: fix
-           BasicLookAndFeel darcula = new DarculaLaf();
-           try {
-            UIManager.setLookAndFeel(darcula);
-           } catch (UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-           }
-           */
+            BasicLookAndFeel darcula = new DarculaLaf();
+            try {
+                UIManager.setLookAndFeel(darcula);
+            } catch (UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
             MainWindow myWindow = new MainWindow();
             myWindow.setVisible(true);
         });
