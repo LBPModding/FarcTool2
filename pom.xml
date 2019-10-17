@@ -6,7 +6,7 @@
 
     <groupId>com.philosophofee</groupId>
     <artifactId>farctool2</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
 
     <name>FarcTool2</name>
     <description>Tool for the manipulation of FARC, FAR4, and MAP files, written in Java.</description>
